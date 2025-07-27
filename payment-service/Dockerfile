@@ -60,6 +60,8 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
   libjemalloc2 \
   ca-certificates \
   tzdata \
+  libsasl2-2 \
+
   # If your app or its dependencies import FoundationNetworking, also install `libcurl4`.
   # libcurl4 \
   # If your app or its dependencies import FoundationXML, also install `libxml2`.
