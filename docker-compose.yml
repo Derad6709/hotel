@@ -48,8 +48,9 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - cockroach-data:/cockroach/cockroach-data
 
-  auth-service:
+  auth:
     build: ./auth-service
+    image: "auth"
     depends_on:
       - cockroachdb
     environment:
@@ -60,11 +61,12 @@ services:
       - DATABASE_NAME=vapor
       - JWT_SECRET=secret
     labels:
-      - "traefik.http.routers.web.rule=PathPrefix(`/auth`)"
-      - "traefik.http.services.web.loadbalancer.server.port=8080"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/register`) || PathPrefix(`/login`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=8080"
 
-  hotel-service:
+  hotel:
     build: ./hotel-service
+    image: "hotel"
     depends_on:
       - cockroachdb
       - kafka
@@ -76,13 +78,14 @@ services:
       - DATABASE_NAME=vapor
       - KAFKA_TOPIC=bookings
       - KAFKA_BROKER=kafka:9092
-      - AUTH_SERVICE_URL=http://auth-service:8080
+      - AUTH_SERVICE_URL=http://auth:8080
     labels:
-      - "traefik.http.routers.web.rule=PathPrefix(`/hotels`)"
-      - "traefik.http.services.web.loadbalancer.server.port=8080"
+      - "traefik.http.routers.hotels.rule=PathPrefix(`/hotels`)"
+      - "traefik.http.services.hotels.loadbalancer.server.port=8080"
 
-  payment-service:
+  payment:
     build: ./payment-service
+    image: "payment"
     depends_on:
       - kafka
     environment:
